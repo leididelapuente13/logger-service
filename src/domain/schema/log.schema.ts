@@ -1,13 +1,21 @@
 import z from 'zod';
-import { Log, LogType } from '../entities/log.entity';
+import { LogType } from '../entities/log.entity';
+
+const logtype = z.nativeEnum(LogType, {invalid_type_error: 'Invalid log type', required_error: 'Type is required'});
 
 const LogSchema = z.object({
     service: z.string().min(1, {message: 'Service is required'}),
     payload: z.string().optional(),
-    type: z.nativeEnum(LogType, {invalid_type_error: 'Invalid log type', required_error: 'Type is required'}),
+    type: logtype,
     content: z.string().optional(),
 });
 
-export const validateLog = (log: Log) => {
+export type LogDto = z.infer<typeof LogSchema>;
+
+export const validateLog = (log: unknown) => {
     return LogSchema.safeParse(log);
+}
+
+export const validateLogType = (type: unknown) => {
+    return logtype.safeParse(type);
 }

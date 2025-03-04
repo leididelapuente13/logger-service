@@ -1,42 +1,13 @@
 import winston from 'winston';
-import 'winston-mongodb';
 import expressWinston from 'express-winston';
 import { Request, Response } from 'express';
 import { Log, LogType } from "../../domain/entities/log.entity";
-import { envs } from '../../config/plugins/env.plugin';
+import { logger } from '../../config/plugins/logger.plugin';
 
-const customLevels = {
-    levels: {
-        error: 0,
-        post: 1,
-        get: 2,
-        put: 3,
-        patch: 4,
-        delete: 5,
-        trace: 6,
-    }
-}
-
-const { MONGO_DB_URL } = envs;
-
-export const logger = () => {
+export const expressLogger = () => {
     return expressWinston.logger({
-        transports: [
-            new winston.transports.MongoDB({
-                level: 'error',
-                db: MONGO_DB_URL,
-                collection: 'logs',
-                format: winston.format.combine(
-                    winston.format.timestamp(),
-                    winston.format.json()
-                )
-            })
-        ],
-        format: winston.format.json(),
+        winstonInstance: logger,
         meta: true,
-        metaField: null,
-        requestField: null,
-        responseField: null,
         dynamicMeta: (req: Request, res: Response & { responseTime?: number }) => {
             const { method, body, url, headers, query, params, ip, protocol, hostname, originalUrl } = req;
             const { statusCode, statusMessage } = res;
@@ -54,7 +25,7 @@ export const logger = () => {
                     url: url,
                     originalUrl: originalUrl,
                 }),
-                type: method,
+                type: method.toLowerCase(),
                 content: JSON.stringify({
                     statusCode: statusCode,
                     statusMessage: statusMessage,
@@ -65,4 +36,3 @@ export const logger = () => {
         }
     })
 };
-

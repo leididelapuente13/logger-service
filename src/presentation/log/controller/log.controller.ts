@@ -1,19 +1,24 @@
 import { Request, Response } from "express";
-import { validateLog } from "../../../domain/schema/log.schema";
+import { validateLog, validateLogType } from "../../../domain/schema/log.schema";
+import { LogRepository } from "../../../domain/repositories/log.repository";
 
 export class LogController {
 
-    async createLog({ body }: Request, res: Response) {
+    constructor(
+        private readonly repository: LogRepository
+    ) { }
 
+    async createLog({ body }: Request, res: Response) {
         try {
             const { service, payload, type, content, date } = body;
-            const {success, data, error } = validateLog({ service, payload, type, content, date });
-            if(!success){ 
+            const { success, data, error } = validateLog({ service, payload, type, content, date });
+            if (!success) {
                 res.status(400).json({ error });
                 return;
             }
 
-            res.status(201).json(data);
+            await this.repository.createLog(data);
+            res.status(201).json({ message: 'Log created' });
         } catch (error) {
             res.status(500).json({ error: 'Internal server error' });
         }
@@ -21,7 +26,8 @@ export class LogController {
 
     async getLogs(req: Request, res: Response) {
         try {
-            res.status(200).json({ message: 'Get all logs' });
+            const logs = await this.repository.getAllLogs();
+            res.status(200).json({ data: logs });
         } catch (error) {
             res.status(500).json({ error: 'Internal server error' });
         }
@@ -30,7 +36,15 @@ export class LogController {
     async filterLogs({ params }: Request, res: Response) {
         try {
             const { type } = params;
-            res.status(200).json({ type });
+            const {success, data: logtype, error} = validateLogType(type);
+
+            if (!success) {
+                res.status(400).json({ error });
+                return;
+            }
+
+            const logs = await this.repository.filterLogsByType(logtype);
+            res.status(200).json({ data: logs });
         } catch (error) {
             res.status(500).json({ error: 'Internal server error' });
         }

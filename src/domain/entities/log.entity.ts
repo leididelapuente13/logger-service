@@ -33,4 +33,14 @@ export class LogEntity{
         this.content = content;
         this.date = date;
     }
+
+    static fromJson(object:  { [key: string]: any }){
+        return new LogEntity({
+            service: object.service,
+            payload: object.payload,
+            type: object.type,
+            content: object.content,
+            date: object.date
+        });
+    }
 }
