@@ -1,10 +1,11 @@
-import { ILog, LogType } from "../../infrastructure/interfaces/Log.interface";
+import { CONSTANTS } from "../../infrastructure/constants/constants";
+import { ILog } from "../../modules/domain/models/Log.interface";
 
 export class LogEntity{
 
     public service: string;
     public payload?: any;
-    public type: LogType;
+    public type: CONSTANTS.LogTypes;
     public content?: {
         statusCode: number;
         statusMessage?: string;

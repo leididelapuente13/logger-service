@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { LogType } from "../infrastructure/interfaces/Log.interface";
+import { CONSTANTS } from "../infrastructure/constants/constants";
 
 export const formatLog = (req: Request, res: Response) => {
     const { body, method,  headers, ip, baseUrl} = req;
@@ -9,7 +9,7 @@ export const formatLog = (req: Request, res: Response) => {
     const log = {
         service: service,
         payload: payload,
-        type: type as LogType,
+        type: type as CONSTANTS.LogTypes,
         content: {
             statusCode: statusCode,
             statusMessage: statusMessage,
