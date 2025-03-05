@@ -1,26 +1,28 @@
 import { Request, Response } from "express";
 import { validateLog, validateLogType } from "../../../domain/schema/log.schema";
 import { LogRepository } from "../../../domain/repositories/log.repository";
+import { formatLog } from "../../../utils/format-log.util";
 
 export class LogController {
 
     constructor(
         private readonly repository: LogRepository
-    ) { }
+    ) { 
+    }
 
-    async createLog({ body }: Request, res: Response) {
+    async createLog(req: Request, res: Response) {
         try {
-            const { service, payload, type, content, date } = body;
-            const { success, data, error } = validateLog({ service, payload, type, content, date });
+            const formattedLog = formatLog(req, res);
+            const { success, data, error } = validateLog(formattedLog);
             if (!success) {
                 res.status(400).json({ error });
                 return;
             }
-
-            await this.repository.createLog(data);
-            res.status(201).json({ message: 'Log created' });
+            const log = await this.repository.createLog(data);
+            res.status(201).json({ message: 'Log created', data: log });
         } catch (error) {
-            res.status(500).json({ error: 'Internal server error' });
+            console.log(error);
+            res.status(500).json({ error: error });
         }
     }
 
@@ -29,7 +31,7 @@ export class LogController {
             const logs = await this.repository.getAllLogs();
             res.status(200).json({ data: logs });
         } catch (error) {
-            res.status(500).json({ error: 'Internal server error' });
+            res.status(500).json({ error: error });
         }
     }
 
@@ -46,7 +48,7 @@ export class LogController {
             const logs = await this.repository.filterLogsByType(logtype);
             res.status(200).json({ data: logs });
         } catch (error) {
-            res.status(500).json({ error: 'Internal server error' });
+            res.status(500).json({ error: error });
         }
     }
 

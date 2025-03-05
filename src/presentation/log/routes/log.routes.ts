@@ -1,16 +1,28 @@
 import { Router } from "express";
 import { LogController } from "../controller/log.controller";
-import { expressLogger } from "../../../infrastructure/middleware/logger.middleware";
+import { LogRepositoryImpl } from "../../../infrastructure/repositories/log.repository";
+import { LogDataSourceImpl } from "../../../infrastructure/datasources/log.datasource";
+import { LogDataSource } from "../../../domain/datasource/log.datasource";
+import { LogRepository } from "../../../domain/repositories/log.repository";
 
-export class logRouter {
-    static get routes(): Router{
+export class LogRouter {
 
-        const router = Router()
+    private logsMongoDataSource : LogDataSource;
+    private logsRepository : LogRepository;
+    private logController : LogController;
 
-        const logController = new LogController();
+    constructor(){
+        this.logsMongoDataSource = new LogDataSourceImpl();
+        this.logsRepository = new LogRepositoryImpl(this.logsMongoDataSource);
+        this.logController = new LogController(this.logsRepository);
+    }
 
-        router.post('/', logController.createLog);
-        // router.get('/', expressLogger());
+    get routes(): Router{
+        const router = Router();
+
+        router.post('/', this.logController.createLog.bind(this.logController));
+        // router.get('/', ;
+        // router.get('/', );
 
         return router;
     }

@@ -1,5 +1,4 @@
 import express, { Router } from 'express';
-import { expressLogger } from '../infrastructure/middleware/logger.middleware';
 
 interface options {
     port: number,
@@ -19,11 +18,9 @@ export class Server {
     }
 
     async start(){
-
         this.app.use(express.json())
 
         this.app.use(this.routes)
-        this.app.use(expressLogger())
 
         this.app.listen(this.port, ()=>{
             console.log(`Port listening on ${this.port} in http://localhost:${this.port}`)

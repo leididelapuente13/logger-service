@@ -1,5 +1,5 @@
 import {Schema, model} from 'mongoose';
-import { LogType } from '../../../domain/entities/log.entity';
+import { LogType } from '../../../infrastructure/interfaces/Log.interface';
 
 const logSchema = new Schema({
     service: {
@@ -7,7 +7,7 @@ const logSchema = new Schema({
         required: true
     },
     payload: {
-        type: String,
+        type: Object,
         required: false
     },
     type: {
@@ -16,7 +16,7 @@ const logSchema = new Schema({
         required: true
     },
     content: {
-        type: String,
+        type: Object,
         required: false
     },
     date: {
@@ -25,4 +25,4 @@ const logSchema = new Schema({
     }
 });
 
-export const LogModel = model('Todo', logSchema);
+export const LogModel = model('Logs', logSchema);

@@ -1,30 +1,21 @@
-export enum LogType {
-    POST    = 'post',
-    GET     = 'get',
-    PUT     = 'put',
-    PATCH   = 'patch',
-    DELETE  = 'delete',
-    ERROR   = 'error',
-    TRACE   = 'trace',
-}
-
-export interface Log {
-    service: string;
-    payload?: string;
-    type: LogType;
-    content?: string;
-    date: Date;
-}
+import { ILog, LogType } from "../../infrastructure/interfaces/Log.interface";
 
 export class LogEntity{
 
     public service: string;
-    public payload?: string;
+    public payload?: any;
     public type: LogType;
-    public content?: string;
+    public content?: {
+        statusCode: number;
+        statusMessage?: string;
+        headers: any;
+        url: string;
+        method: string;
+        ip: string;
+    };
     public date: Date;
 
-    constructor(log: Log){
+    constructor(log: ILog){
         const {service, payload, type, content, date} = log;
 
         this.service = service;

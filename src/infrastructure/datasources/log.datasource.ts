@@ -1,7 +1,8 @@
 import { LogModel } from "../../data/mongo/models/log.model";
 import { LogDataSource } from "../../domain/datasource/log.datasource";
-import { LogEntity, LogType } from "../../domain/entities/log.entity";
+import { LogEntity } from "../../domain/entities/log.entity";
 import { LogDto } from "../../domain/schema/log.schema";
+import { LogType } from "../interfaces/Log.interface";
 
 export class LogDataSourceImpl implements LogDataSource {
     async createLog(log: LogDto): Promise<LogEntity> {

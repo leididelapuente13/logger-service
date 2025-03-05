@@ -1,13 +1,22 @@
 import z from 'zod';
-import { LogType } from '../entities/log.entity';
+import { LogType } from '../../infrastructure/interfaces/Log.interface';
 
 const logtype = z.nativeEnum(LogType, {invalid_type_error: 'Invalid log type', required_error: 'Type is required'});
 
-const LogSchema = z.object({
-    service: z.string().min(1, {message: 'Service is required'}),
-    payload: z.string().optional(),
+const contentSchema = z.object({
+    statusCode: z.number(),
+    statusMessage: z.string().optional(),
+    headers: z.any(),
+    url: z.string(),
+    method: z.string(),
+    ip: z.string()
+});
+
+export const LogSchema = z.object({
+    service: z.string({ required_error: 'Service is required' }),
+    payload: z.any().optional(),
     type: logtype,
-    content: z.string().optional(),
+    content: contentSchema.optional(),
 });
 
 export type LogDto = z.infer<typeof LogSchema>;
