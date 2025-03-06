@@ -1,6 +1,8 @@
+import { injectable } from "inversify";
 import { CONSTANTS } from "../../infrastructure/constants/constants";
 import { ILog } from "../../modules/domain/models/Log.interface";
 
+@injectable()
 export class LogEntity{
 
     public service: string;

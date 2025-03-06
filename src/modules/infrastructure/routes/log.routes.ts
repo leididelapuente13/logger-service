@@ -4,26 +4,25 @@ import { LogRepositoryImpl } from "../repositories/log.repository";
 import { LogDataSourceImpl } from "../datasources/log.datasource";
 import { LogDataSource } from "../../domain/datasource/log.datasource";
 import { LogRepository } from "../../domain/repositories/log.repository";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../../infrastructure/containers/types";
 
+@injectable()
 export class LogRouter {
 
-    private logsMongoDataSource : LogDataSource;
-    private logsRepository : LogRepository;
-    private logController : LogController;
+    private logController: LogController; 
 
-    constructor(){
-        this.logsMongoDataSource = new LogDataSourceImpl();
-        this.logsRepository = new LogRepositoryImpl(this.logsMongoDataSource);
-        this.logController = new LogController(this.logsRepository);
+    constructor(
+        @inject(TYPES.LOG_REPOSITORY) private logsRepository: LogRepository,
+        @inject(TYPES.LOG_CONTROLLER) logController: LogController 
+    ) {
+        this.logController = logController;
     }
 
-    get routes(): Router{
+    get routes(): Router {
         const router = Router();
-
         router.post('/', this.logController.createLog.bind(this.logController));
-        // router.get('/', this.logController.getAllLogs.bind(this.logController));
-        router.get('/', this.logController.filterLogs.bind(this.logController));
-
+        router.get('/', this.logController.getLogs.bind(this.logController));
         return router;
     }
 }

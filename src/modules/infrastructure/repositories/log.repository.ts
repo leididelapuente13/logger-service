@@ -3,11 +3,14 @@ import { LogEntity } from "../../../domain/entities/log.entity";
 import { LogRepository } from "../../domain/repositories/log.repository";
 import { LogDto } from "../schema/log.schema";
 import { CONSTANTS } from "../../../infrastructure/constants/constants";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../../infrastructure/containers/types";
 
+@injectable()
 export class LogRepositoryImpl implements LogRepository {
 
     constructor(
-        private readonly datasource: LogDataSource
+        @inject(TYPES.LOG_DATASOURCE) private readonly datasource: LogDataSource
     ) {
     }
 
