@@ -15,7 +15,7 @@ export class LogController {
     constructor(
         @inject(TYPES.LOG_REPOSITORY) private readonly repository: LogRepository,
         @inject(TYPES.CREATE_LOG_USE_CASE) private readonly createLogUseCase: IUseCase<LogDto, LogEntity[]>,
-        @inject(TYPES.GET_LOGS_USE_CASE) private readonly getAllLogsUseCase: IUseCase<null, LogEntity[]>,
+        @inject(TYPES.GET_LOGS_USE_CASE) private readonly getAllLogsUseCase: IUseCase<void, LogEntity[]>,
         @inject(TYPES.FILTER_LOGS_USE_CASE) private readonly filterLogsUseCase: IUseCase<CONSTANTS.LogTypes, LogEntity[]>
     ) {
     }
@@ -43,7 +43,7 @@ export class LogController {
             const { type } = query;
 
             if(!type){
-                const filterLogs = this.getAllLogsUseCase.execute(null);
+                const filterLogs = await this.getAllLogsUseCase.execute();
                 res.status(200).json({ data: filterLogs });
                 return;
             }

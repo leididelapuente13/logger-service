@@ -10,13 +10,10 @@ import { TYPES } from "../../../infrastructure/containers/types";
 @injectable()
 export class LogRouter {
 
-    private logController: LogController; 
-
     constructor(
-        @inject(TYPES.LOG_REPOSITORY) private logsRepository: LogRepository,
-        @inject(TYPES.LOG_CONTROLLER) logController: LogController 
+        // @inject(TYPES.LOG_REPOSITORY) private logsRepository: LogRepository,
+        @inject(TYPES.LOG_CONTROLLER) private logController: LogController 
     ) {
-        this.logController = logController;
     }
 
     get routes(): Router {

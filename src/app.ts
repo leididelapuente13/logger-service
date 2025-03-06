@@ -2,6 +2,8 @@ import { envs } from "./config/plugins/env.plugin";
 import { MongoDatabase } from "./infrastructure/database/mongo/init";
 import { AppRoute } from "./modules/infrastructure/routes";
 import { Server } from "./modules/infrastructure/server";
+import "reflect-metadata";
+
 
 (async () => {
   await main();

@@ -1,16 +1,19 @@
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
 import { LogEntity } from "../../../domain/entities/log.entity";
 import { IUseCase } from "../../../domain/usecase/usecase";
 import { LogRepository } from "../../domain/repositories/log.repository";
+import { TYPES } from "../../../infrastructure/containers/types";
 
 @injectable()
-export class GetAllLogsUseCase implements IUseCase<null, LogEntity[]> {
+export class GetAllLogsUseCase implements IUseCase<void, LogEntity[]> {
     constructor(
-        private readonly repository: LogRepository
-    ) { }
+        @inject(TYPES.LOG_REPOSITORY) private readonly repository: LogRepository
+    ){} 
 
 
     async execute(): Promise<LogEntity[]> {
-      return await this.repository.getAllLogs();
+      const logs = await this.repository.getAllLogs();
+      if(logs.length === 0) throw new Error('No logs found');
+      return logs;
     }
 }

@@ -1,14 +1,15 @@
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
 import { LogEntity } from "../../../domain/entities/log.entity";
 import { IUseCase } from "../../../domain/usecase/usecase";
 import { CONSTANTS } from "../../../infrastructure/constants/constants";
 import { LogRepository } from "../../domain/repositories/log.repository";
-import { LogDto, validateLogType } from "../../infrastructure/schema/log.schema";
+import { validateLogType } from "../../infrastructure/schema/log.schema";
+import { TYPES } from "../../../infrastructure/containers/types";
 
 @injectable()
 export class FilterLogsUseCase implements IUseCase<CONSTANTS.LogTypes, LogEntity[]> {
     constructor(
-        private readonly repository: LogRepository
+         @inject(TYPES.LOG_REPOSITORY) private readonly repository: LogRepository
     ) { }
 
 
@@ -17,7 +18,7 @@ export class FilterLogsUseCase implements IUseCase<CONSTANTS.LogTypes, LogEntity
         if (!success) throw (error);
 
         const filteredLogs = await this.repository.filterLogsByType(logtype);
-        if(filteredLogs.length === 0) throw new Error('No logs found');
+        if(filteredLogs.length === 0) throw ('No logs found');
         return filteredLogs;
     }
 }
