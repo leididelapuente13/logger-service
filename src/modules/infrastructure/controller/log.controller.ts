@@ -13,7 +13,6 @@ import { TYPES } from "../../../infrastructure/containers/types";
 export class LogController {
 
     constructor(
-        @inject(TYPES.LOG_REPOSITORY) private readonly repository: LogRepository,
         @inject(TYPES.CREATE_LOG_USE_CASE) private readonly createLogUseCase: IUseCase<LogDto, LogEntity[]>,
         @inject(TYPES.GET_LOGS_USE_CASE) private readonly getAllLogsUseCase: IUseCase<void, LogEntity[]>,
         @inject(TYPES.FILTER_LOGS_USE_CASE) private readonly filterLogsUseCase: IUseCase<CONSTANTS.LogTypes, LogEntity[]>
@@ -34,7 +33,7 @@ export class LogController {
             res.status(201).json({ message: 'Log created', data: log });
         } catch (error) {
             console.log(error);
-            res.status(500).json({ error: error });
+            res.json({ error: error });
         }
     }
 
@@ -48,10 +47,10 @@ export class LogController {
                 return;
             }
 
-            const logs = await this.filterLogsUseCase.execute(type as CONSTANTS.LogTypes);
+            const logs = await this.filterLogsUseCase.execute(type as CONSTANTS .LogTypes);
             res.status(200).json({ data: logs });
-        } catch (error) {
-            res.status(500).json({ error: error });
+        } catch (error: any) {
+            res.status(error.status ?? 500).json({ error: error });
         }
     }
 
