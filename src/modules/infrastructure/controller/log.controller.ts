@@ -8,6 +8,8 @@ import { LogEntity } from "../../../domain/entities/log.entity";
 import { IUseCase } from "../../../domain/usecase/usecase";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../../infrastructure/containers/types";
+import { CustomError } from "../../../domain/errors/Error";
+import { ValidationError } from "../../../domain/errors/ValidationError";
 
 @injectable()
 export class LogController {
@@ -24,17 +26,13 @@ export class LogController {
         try {
             const formattedLog = formatLog(req, res);
             const { success, data, error } = validateLog(formattedLog);
-            if (!success) {
-                res.status(400).json({ error });
-                return;
-            }
+            if (!success) throw new ValidationError(error)
 
             const log = await this.createLogUseCase.execute(data);
 
             res.status(201).json({ message: 'Log created', data: log });
-        } catch (error) {
-            console.log(error);
-            res.status(500).json({ error: error });
+        } catch (error: any) {
+            res.status(error.status).json(error);
         }
     }
 
@@ -50,8 +48,8 @@ export class LogController {
 
             const logs = await this.filterLogsUseCase.execute(type as CONSTANTS.LogTypes);
             res.status(200).json({ data: logs });
-        } catch (error) {
-            res.status(500).json({ error: error });
+        } catch (error: any) {
+            res.status(error.status ?? 500).json({error: error});
         }
     }
 
