@@ -1,9 +1,5 @@
 import { Router } from "express";
 import { LogController } from "../controller/log.controller";
-import { LogRepositoryImpl } from "../repositories/log.repository";
-import { LogDataSourceImpl } from "../datasources/log.datasource";
-import { LogDataSource } from "../../domain/datasource/log.datasource";
-import { LogRepository } from "../../domain/repositories/log.repository";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../../infrastructure/containers/types";
 
@@ -11,7 +7,6 @@ import { TYPES } from "../../../infrastructure/containers/types";
 export class LogRouter {
 
     constructor(
-        // @inject(TYPES.LOG_REPOSITORY) private logsRepository: LogRepository,
         @inject(TYPES.LOG_CONTROLLER) private logController: LogController 
     ) {
     }

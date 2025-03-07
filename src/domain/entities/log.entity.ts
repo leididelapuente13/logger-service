@@ -29,12 +29,15 @@ export class LogEntity{
     }
 
     static fromJson(object:  { [key: string]: any }){
+
+        const {service, payload, type, content, date} = object;
+
         return new LogEntity({
-            service: object.service,
-            payload: object.payload,
-            type: object.type,
-            content: object.content,
-            date: object.date
+            service: service,
+            payload: payload,
+            type: type,
+            content: content,
+            date: new Date(date)
         });
     }
 }

@@ -1,21 +1,18 @@
 import { Request, Response } from "express";
-import { LogDto, validateLog, validateLogType } from "../schema/log.schema";
-import { LogRepository } from "../../domain/repositories/log.repository";
+import { LogDto, validateLog } from "../schema/log.schema";
 import { formatLog } from "../../../utils/format-log.util";
-import { FilterLogsUseCase } from "../../application/usecases/filterLogs.usecase";
 import { CONSTANTS } from "../../../infrastructure/constants/constants";
 import { LogEntity } from "../../../domain/entities/log.entity";
 import { IUseCase } from "../../../domain/usecase/usecase";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../../infrastructure/containers/types";
-import { CustomError } from "../../../domain/errors/Error";
 import { ValidationError } from "../../../domain/errors/ValidationError";
+import { handleError, handleResponse } from "../../../domain/handlers";
 
 @injectable()
 export class LogController {
 
     constructor(
-        @inject(TYPES.LOG_REPOSITORY) private readonly repository: LogRepository,
         @inject(TYPES.CREATE_LOG_USE_CASE) private readonly createLogUseCase: IUseCase<LogDto, LogEntity[]>,
         @inject(TYPES.GET_LOGS_USE_CASE) private readonly getAllLogsUseCase: IUseCase<void, LogEntity[]>,
         @inject(TYPES.FILTER_LOGS_USE_CASE) private readonly filterLogsUseCase: IUseCase<CONSTANTS.LogTypes, LogEntity[]>
@@ -30,9 +27,9 @@ export class LogController {
 
             const log = await this.createLogUseCase.execute(data);
 
-            res.status(201).json({ message: 'Log created', data: log });
+            handleResponse(res, { status: 201, message: 'Log created', data: log })
         } catch (error: any) {
-            res.status(error.status).json(error);
+            handleError(error, res)
         }
     }
 
@@ -40,16 +37,16 @@ export class LogController {
         try {
             const { type } = query;
 
-            if(!type){
-                const filterLogs = await this.getAllLogsUseCase.execute();
-                res.status(200).json({ data: filterLogs });
+            if (!type) {
+                const logs = await this.getAllLogsUseCase.execute();
+                handleResponse(res, { status: 200, message: 'Your logs', data: logs })
                 return;
             }
 
-            const logs = await this.filterLogsUseCase.execute(type as CONSTANTS.LogTypes);
-            res.status(200).json({ data: logs });
+            const filteredLogs = await this.filterLogsUseCase.execute(type as CONSTANTS.LogTypes);
+            handleResponse(res, { status: 200, message: `logs with type ${type}`, data: filteredLogs })
         } catch (error: any) {
-            res.status(error.status ?? 500).json({error: error});
+            handleError(error, res)
         }
     }
 
