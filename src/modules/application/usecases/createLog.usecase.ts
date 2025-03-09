@@ -1,7 +1,6 @@
 import { inject, injectable } from "inversify";
-import { LogEntity } from "../../../domain/entities/log.entity";
-import { IUseCase } from "../../../domain/usecase/usecase";
-import { LogRepository } from "../../domain/repositories/log.repository";
+import { LogEntity, IUseCase } from "../../../domain";
+import { LogRepository } from "../../domain";
 import { LogDto } from "../../infrastructure/schema/log.schema";
 import { TYPES } from "../../../infrastructure/containers/types";
 
